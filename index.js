@@ -84,7 +84,7 @@ client.connect(err => {
             })
     })
     app.get('/testimonials', (req, res) => {
-        serviceCollection.find()
+        reviewCollection.find()
             .toArray((err, testimonial) => {
                 res.send(testimonial)
             })
