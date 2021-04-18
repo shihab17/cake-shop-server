@@ -83,6 +83,12 @@ client.connect(err => {
                 res.send(services)
             })
     })
+    app.get('/testimonials', (req, res) => {
+        serviceCollection.find()
+            .toArray((err, testimonial) => {
+                res.send(testimonial)
+            })
+    })
     app.get('/checkout', (req, res) => {
         checkoutCollection.find()
             .toArray((err, checkout) => {
