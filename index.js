@@ -22,6 +22,8 @@ client.connect(err => {
     const adminCollection = client.db("cakeShop").collection("admin");
     const reviewCollection = client.db("cakeShop").collection("review");
     const checkoutCollection = client.db("cakeShop").collection("checkout");
+    const ordersCollection = client.db("cakeShop").collection("orders");
+    const bookingsCollection = client.db("cakeShop").collection("bookings");
     // perform actions on the collection object
     app.post('/makeAdmin', (req, res) => {
         console.log(req.body)
@@ -57,6 +59,24 @@ client.connect(err => {
                 res.send(result.insertedCount > 0)
             })
     })
+    app.post('/addOrder', (req, res) => {
+        const newOrder = req.body;
+        console.log(newOrder)
+        ordersCollection.insertOne(newOrder)
+            .then(result => {
+                console.log('inserted count', result.insertedCount)
+                res.send(result.insertedCount > 0)
+            })
+    })
+    app.post('/addBooking', (req, res) => {
+        const newBookings = req.body;
+        console.log(newBookings)
+        bookingsCollection.insertOne(newBookings)
+            .then(result => {
+                console.log('inserted count', result.insertedCount)
+                res.send(result.insertedCount > 0)
+            })
+    })
     app.get('/services', (req, res) => {
         serviceCollection.find()
             .toArray((err, services) => {
@@ -77,16 +97,39 @@ client.connect(err => {
                 res.send(checkout)
             })
     })
+    app.get('/order/:email', (req, res) => {
+        const email = req.params.email;
+        ordersCollection.find({ "email": email })
+            .toArray((err, order) => {
+                res.send(order)
+            })
+    })
+    app.delete('/deleteCheckout/:email', (req, res) => {
+        const email = req.params.email;
+        console.log(email)
+        checkoutCollection.deleteMany({ "email": email })
+            .then(documents => res.send(!!documents.value))
+    })
+    app.delete('/deleteOrder/:email', (req, res) => {
+        const email = req.params.email;
+        console.log(email)
+        ordersCollection.deleteMany({ "email": email })
+            .then(documents => res.send(!!documents.value))
+    })
     app.get('/checkout/:id', (req, res) => {
-        const id = ObjectID(req.params.id)
-        console.log(checkoutId)
-        checkoutCollection.find({ _id: id })
+        checkoutCollection.find({ _id: ObjectID(req.params.id) })
             .toArray((err, doc) => {
                 res.send(doc);
                 console.log(err);
             })
     })
-    
+
+    app.get('/booking', (req, res) => {
+        bookingsCollection.find()
+            .toArray((err, booking) => {
+                res.send(booking)
+            })
+    })
 
     app.delete('/deleteCheckout/:checkoutId', (req, res) => {
         const checkoutId = ObjectID(req.params.checkoutId)
